@@ -26,12 +26,11 @@ export default async function CurrentMeetingPage() {
     redirect(`/meetings/${current.id}`);
   }
 
-  const closest = meetings.reduce((prev, curr) =>
-    Math.abs(new Date(curr.date).getTime() - new Date(sundayDate).getTime()) 
-    Math.abs(new Date(prev.date).getTime() - new Date(sundayDate).getTime())
-      ? curr
-      : prev
-  );
+  const closest = meetings.reduce((prev, curr) => {
+    const currDiff = Math.abs(new Date(curr.date).getTime() - new Date(sundayDate).getTime());
+    const prevDiff = Math.abs(new Date(prev.date).getTime() - new Date(sundayDate).getTime());
+    return currDiff < prevDiff ? curr : prev;
+  });
 
   redirect(`/meetings/${closest.id}`);
 }
