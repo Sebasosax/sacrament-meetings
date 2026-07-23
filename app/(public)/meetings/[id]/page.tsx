@@ -9,7 +9,7 @@ export default async function MeetingPage({
 }) {
   const { id } = await params;
   const numericId = Number(id);
-  const meeting = getMeetingById(numericId);
+  const meeting = await getMeetingById(numericId);
 
   if (!meeting) {
     notFound();
