@@ -1,5 +1,11 @@
 import { neon } from '@neondatabase/serverless';
-import { SacramentMeeting, Hymn, SpeakerItem, WardBusinessItem } from './types';
+import {
+  SacramentMeeting,
+  Hymn,
+  SpeakerItem,
+  WardBusinessItem,
+  MeetingInput,
+} from './types';
 
 export const sql = neon(process.env.DATABASE_URL!);
 
@@ -100,4 +106,73 @@ export async function getMeetingsPaginated({
     meetings: (rows as MeetingRow[]).map(mapRowToMeeting),
     total: Number(countResult[0].count),
   };
+}
+
+// ---------- Mutations ----------
+
+export async function createMeetingRecord(data: MeetingInput): Promise<SacramentMeeting> {
+  const rows = await sql`
+    INSERT INTO meetings (
+      date,
+      meeting_type,
+      presiding,
+      conducting,
+      announcements,
+      opening_hymn,
+      opening_prayer,
+      ward_business,
+      stake_business,
+      sacrament_hymn,
+      speakers,
+      closing_hymn,
+      closing_prayer
+    ) VALUES (
+      ${data.date},
+      ${data.meetingType},
+      ${data.presiding},
+      ${data.conducting},
+      ${data.announcements},
+      ${JSON.stringify(data.openingHymn)},
+      ${data.openingPrayer},
+      ${JSON.stringify(data.wardBusiness)},
+      ${data.stakeBusiness},
+      ${JSON.stringify(data.sacramentHymn)},
+      ${JSON.stringify(data.speakers)},
+      ${JSON.stringify(data.closingHymn)},
+      ${data.closingPrayer}
+    )
+    RETURNING *
+  `;
+
+  return mapRowToMeeting(rows[0] as MeetingRow);
+}
+
+export async function updateMeetingRecord(
+  id: number,
+  data: MeetingInput
+): Promise<SacramentMeeting> {
+  const rows = await sql`
+    UPDATE meetings SET
+      date = ${data.date},
+      meeting_type = ${data.meetingType},
+      presiding = ${data.presiding},
+      conducting = ${data.conducting},
+      announcements = ${data.announcements},
+      opening_hymn = ${JSON.stringify(data.openingHymn)},
+      opening_prayer = ${data.openingPrayer},
+      ward_business = ${JSON.stringify(data.wardBusiness)},
+      stake_business = ${data.stakeBusiness},
+      sacrament_hymn = ${JSON.stringify(data.sacramentHymn)},
+      speakers = ${JSON.stringify(data.speakers)},
+      closing_hymn = ${JSON.stringify(data.closingHymn)},
+      closing_prayer = ${data.closingPrayer}
+    WHERE id = ${id}
+    RETURNING *
+  `;
+
+  return mapRowToMeeting(rows[0] as MeetingRow);
+}
+
+export async function deleteMeetingRecord(id: number): Promise<void> {
+  await sql`DELETE FROM meetings WHERE id = ${id}`;
 }
