@@ -1,5 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getMeetingById } from '@/lib/meetings-db';
+import EditMeetingForm from './EditMeetingForm';
+import DeleteMeetingButton from './DeleteMeetingButton';
 
 export default async function EditMeetingPage({
   params,
@@ -16,7 +18,8 @@ export default async function EditMeetingPage({
   return (
     <div>
       <h1>Edit Meeting</h1>
-      <p>Editing meeting for {meeting.date} — form arrives in the next step.</p>
+      <EditMeetingForm meeting={meeting} />
+      <DeleteMeetingButton id={meeting.id} />
     </div>
   );
 }
