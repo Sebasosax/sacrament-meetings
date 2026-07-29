@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { SacramentMeeting } from '@/lib/types';
 
 interface MeetingDetailProps {
@@ -8,13 +9,22 @@ export default function MeetingDetail({ meeting }: MeetingDetailProps) {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <header>
-        <h1 className="text-2xl font-bold capitalize">{meeting.meetingType} Meeting</h1>
-        <p className="text-gray-600">{meeting.date}</p>
-        <p className="text-sm text-gray-500">
-          Presiding: {meeting.presiding} · Conducting: {meeting.conducting}
-        </p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-2xl font-bold capitalize">{meeting.meetingType} Meeting</h1>
+            <p className="text-gray-600">{meeting.date}</p>
+            <p className="text-sm text-gray-500">
+              Presiding: {meeting.presiding} · Conducting: {meeting.conducting}
+            </p>
+          </div>
+          <Link
+            href={`/meetings/${meeting.id}/edit`}
+            className="text-blue-600 hover:underline text-sm"
+          >
+            Edit
+          </Link>
+        </div>
       </header>
-
       {meeting.announcements && meeting.announcements.length > 0 && (
         <section>
           <h2 className="font-semibold mb-1">Announcements</h2>
@@ -25,17 +35,14 @@ export default function MeetingDetail({ meeting }: MeetingDetailProps) {
           </ul>
         </section>
       )}
-
       <section>
         <h2 className="font-semibold mb-1">Opening Hymn</h2>
         <p>#{meeting.openingHymn.number} — {meeting.openingHymn.title}</p>
       </section>
-
       <section>
         <h2 className="font-semibold mb-1">Opening Prayer</h2>
         <p>{meeting.openingPrayer}</p>
       </section>
-
       {meeting.wardBusiness.length > 0 && (
         <section>
           <h2 className="font-semibold mb-1">Ward Business</h2>
@@ -46,16 +53,13 @@ export default function MeetingDetail({ meeting }: MeetingDetailProps) {
           </ul>
         </section>
       )}
-
       {meeting.stakeBusiness && (
         <p className="text-sm italic text-gray-600">Includes stake business</p>
       )}
-
       <section>
         <h2 className="font-semibold mb-1">Sacrament Hymn</h2>
         <p>#{meeting.sacramentHymn.number} — {meeting.sacramentHymn.title}</p>
       </section>
-
       {meeting.speakers.length > 0 && (
         <section>
           <h2 className="font-semibold mb-1">Speakers & Musical Numbers</h2>
@@ -68,12 +72,10 @@ export default function MeetingDetail({ meeting }: MeetingDetailProps) {
           </ul>
         </section>
       )}
-
       <section>
         <h2 className="font-semibold mb-1">Closing Hymn</h2>
         <p>#{meeting.closingHymn.number} — {meeting.closingHymn.title}</p>
       </section>
-
       <section>
         <h2 className="font-semibold mb-1">Closing Prayer</h2>
         <p>{meeting.closingPrayer}</p>
