@@ -9,7 +9,6 @@ import {
 } from './meetings-db';
 import { MeetingFormSchema } from './meeting-schema';
 
-
 // ---------- FormData -> raw object ----------
 // Field-naming contract used by the create/edit forms:
 // - scalar fields: same name as the schema key (date, presiding, conducting, ...)
@@ -126,6 +125,7 @@ export async function updateMeeting(
   }
 
   revalidatePath('/meetings');
+  revalidatePath(`/meetings/${id}`);
   redirect('/meetings');
 }
 
@@ -138,5 +138,6 @@ export async function deleteMeeting(id: number): Promise<void> {
   }
 
   revalidatePath('/meetings');
+  revalidatePath(`/meetings/${id}`);
   redirect('/meetings');
 }
