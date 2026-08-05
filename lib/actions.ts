@@ -2,21 +2,14 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { AuthError } from 'next-auth';
+import { signIn } from '@/auth';
 import {
   createMeetingRecord,
   updateMeetingRecord,
   deleteMeetingRecord,
 } from './meetings-db';
 import { MeetingFormSchema } from './meeting-schema';
-
-// ---------- FormData -> raw object ----------
-// Field-naming contract used by the create/edit forms:
-// - scalar fields: same name as the schema key (date, presiding, conducting, ...)
-// - hymns: <hymnKey>Number / <hymnKey>Title (e.g. openingHymnNumber, openingHymnTitle)
-// - announcements: single textarea named "announcements", one item per line
-// - wardBusiness: single textarea named "wardBusiness", one item per line
-// - speakers: repeated inputs sharing the same name -> speakerName[], speakerTopic[], speakerType[]
-// - stakeBusiness: checkbox named "stakeBusiness"
 
 function formDataToMeetingInput(formData: FormData) {
   const speakerNames = formData.getAll('speakerName') as string[];
@@ -68,14 +61,10 @@ function formDataToMeetingInput(formData: FormData) {
   };
 }
 
-// ---------- Server Action state type ----------
-
 export type MeetingFormState = {
   message?: string;
   errors?: Record<string, string[]>;
 };
-
-// ---------- Server Actions ----------
 
 export async function createMeeting(
   prevState: MeetingFormState,
@@ -140,4 +129,27 @@ export async function deleteMeeting(id: number): Promise<void> {
   revalidatePath('/meetings');
   revalidatePath(`/meetings/${id}`);
   redirect('/meetings');
+}
+
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData,
+): Promise<string | undefined> {
+  try {
+    await signIn('credentials', {
+      email: formData.get('email'),
+      password: formData.get('password'),
+      redirectTo: '/meetings',
+    });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid email or password.';
+        default:
+          return 'Something went wrong. Please try again.';
+      }
+    }
+    throw error;
+  }
 }

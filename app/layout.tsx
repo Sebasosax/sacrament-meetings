@@ -13,9 +13,25 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "Sacrament Meeting Planner",
-  description: "Plan and manage sacrament meeting agendas",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Sacrament Meeting Planner",
+    template: "%s | Sacrament Meeting Planner",
+  },
+  description:
+    "Plan and manage sacrament meeting agendas for Springhill Ward — hymns, speakers, prayers, and ward business in one place.",
+  openGraph: {
+    title: "Sacrament Meeting Planner",
+    description:
+      "Plan and manage sacrament meeting agendas for Springhill Ward.",
+    siteName: "Sacrament Meeting Planner",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

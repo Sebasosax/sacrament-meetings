@@ -1,7 +1,9 @@
 import Image from 'next/image';
 import NavLinks from './NavLinks';
+import { auth, signOut } from '@/auth';
 
-export default function Header() {
+export default async function Header() {
+  const session = await auth();
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
@@ -23,7 +25,25 @@ export default function Header() {
           <p className="text-sm text-gray-500">{today}</p>
         </div>
       </div>
-      <NavLinks />
+      <div className="flex items-center gap-4">
+        <NavLinks />
+        {session?.user ? (
+          <form
+            action={async () => {
+              'use server';
+              await signOut({ redirectTo: '/' });
+            }}
+          >
+            <button type="submit" className="text-sm underline">
+              Sign Out
+            </button>
+          </form>
+        ) : (
+          <a href="/login" className="text-sm underline">
+            Sign In
+          </a>
+        )}
+      </div>
     </header>
   );
 }
